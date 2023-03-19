@@ -1,4 +1,5 @@
 //jshint esversion:6
+require('dotenv').config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
@@ -9,6 +10,10 @@ const app = express();
 app.use(express.static("public"));
 app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
+
+
+console.log(process.env.API);
+
 // connect with mongoose
 mongoose.connect('mongodb://127.0.0.1:27017/userDBalaji',{useNewUrlParser:true});
 //simple java script object.
@@ -18,12 +23,13 @@ mongoose.connect('mongodb://127.0.0.1:27017/userDBalaji',{useNewUrlParser:true})
 // };
 
 //no longer simple js object but actually an obj that created from mongoose schema class.
-const userSchema = new mongoose.Schema( {
+const userSchema = new mongoose.Schema({
     email : String,
     password : String
     });
-
-const secret = "thisisoursecret";
+// 2nd level authentation..
+//const secret = "thisisoursecret"; //create it in .env for 3 level authentication
+const secret = process.env.SECRET;
 userSchema.plugin(encrypt,{secret:secret,encryptedFields: ['password'] });
 // must plugin before model creation..
 const User = new mongoose.model("User",userSchema);
@@ -77,3 +83,4 @@ app.post("/register",function(req,res){
 app.listen(3000,function(){
  console.log("Server started on port : 3000");
 });
+
